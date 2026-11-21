@@ -1,0 +1,1 @@
+<?php require_once __DIR__.'/config/config.php';if($_SERVER['REQUEST_METHOD']!=='POST')go('index.php');verify_csrf();$email=filter_var($_POST['email']??'',FILTER_VALIDATE_EMAIL);if($email){$s=$pdo->prepare('INSERT IGNORE INTO newsletter_subscribers(email) VALUES(?)');$s->execute([$email]);}go('index.php');

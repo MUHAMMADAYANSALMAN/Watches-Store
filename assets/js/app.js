@@ -1,0 +1,1 @@
+const theme=document.getElementById('themeSelect');if(theme){const current=document.documentElement.dataset.theme||'light';theme.value=current;theme.addEventListener('change',()=>{document.documentElement.dataset.theme=theme.value;document.cookie='we_theme='+theme.value+';path=/;max-age=31536000'});}

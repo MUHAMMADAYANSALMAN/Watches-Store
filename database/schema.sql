@@ -1,0 +1,16 @@
+CREATE DATABASE IF NOT EXISTS watcheserror CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE watcheserror;
+CREATE TABLE admins(id INT AUTO_INCREMENT PRIMARY KEY,username VARCHAR(80) NOT NULL UNIQUE,password_hash VARCHAR(255) NOT NULL,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE customers(id BIGINT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(160) NOT NULL,phone VARCHAR(40) NOT NULL,email VARCHAR(190) NOT NULL,address TEXT NOT NULL,city VARCHAR(100) NOT NULL,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,INDEX(phone),INDEX(email));
+CREATE TABLE products(id BIGINT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(180) NOT NULL,description TEXT,category ENUM('Men','Women') NOT NULL,price DECIMAL(10,2) NOT NULL,sale_price DECIMAL(10,2) DEFAULT 0,stock INT NOT NULL DEFAULT 0,image_url VARCHAR(500),featured TINYINT(1) DEFAULT 0,active TINYINT(1) DEFAULT 1,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,INDEX(category),INDEX(active),INDEX(created_at));
+CREATE TABLE categories(id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(80) NOT NULL UNIQUE);
+CREATE TABLE orders(id BIGINT AUTO_INCREMENT PRIMARY KEY,order_code VARCHAR(32) NOT NULL UNIQUE,customer_id BIGINT NOT NULL,total DECIMAL(10,2) NOT NULL,shipping DECIMAL(10,2) DEFAULT 0,payment_method VARCHAR(60) NOT NULL,status ENUM('New Order','Confirmed','Processing','Shipped','Delivered','Cancelled') NOT NULL DEFAULT 'New Order',created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(customer_id) REFERENCES customers(id),INDEX(status),INDEX(created_at));
+CREATE TABLE order_items(id BIGINT AUTO_INCREMENT PRIMARY KEY,order_id BIGINT NOT NULL,product_id BIGINT NULL,product_name VARCHAR(180) NOT NULL,quantity INT NOT NULL,unit_price DECIMAL(10,2) NOT NULL,FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE SET NULL);
+CREATE TABLE order_status_history(id BIGINT AUTO_INCREMENT PRIMARY KEY,order_id BIGINT NOT NULL,status VARCHAR(40) NOT NULL,note VARCHAR(255),created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE);
+CREATE TABLE payments(id BIGINT AUTO_INCREMENT PRIMARY KEY,order_id BIGINT NOT NULL,provider VARCHAR(80),transaction_ref VARCHAR(160),amount DECIMAL(10,2) NOT NULL,status VARCHAR(40),created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(order_id) REFERENCES orders(id));
+CREATE TABLE newsletter_subscribers(id BIGINT AUTO_INCREMENT PRIMARY KEY,email VARCHAR(190) NOT NULL UNIQUE,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+INSERT INTO products(name,description,category,price,sale_price,stock,image_url,featured) VALUES
+('Royal Chronograph','A refined chronograph with a confident everyday profile.','Men',45000,31500,12,'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=900',1),
+('Elite Classic','A clean and timeless stainless-steel design.','Men',44000,33000,9,'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=900',1),
+('Titan Legacy','A statement piece with warm gold detailing.','Men',45000,27000,7,'https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=900',1),
+('Diamond Luxe','An elegant rose-gold inspired timepiece.','Women',65000,52000,5,'https://images.unsplash.com/photo-1549972574-8e3e1ed6a347?w=900',1);
